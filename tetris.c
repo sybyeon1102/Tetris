@@ -1,8 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 int nSpace[24][12];
+int nBlock[7][4][4][4] = {0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,
+	0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,
+	0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,
+	0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,
+
+	0,0,0,0,0,2,2,0,0,2,2,0,0,0,0,0,
+	0,0,0,0,0,2,2,0,0,2,2,0,0,0,0,0,
+	0,0,0,0,0,2,2,0,0,2,2,0,0,0,0,0,
+	0,0,0,0,0,2,2,0,0,2,2,0,0,0,0,0,
+
+	0,0,0,0,0,2,0,0,0,2,2,2,0,0,0,0,
+	0,0,0,0,0,2,2,0,0,2,0,0,0,2,0,0,
+	0,0,0,0,2,2,2,0,0,0,2,0,0,0,0,0,
+	0,0,2,0,0,0,2,0,0,2,2,0,0,0,0,0,
+
+	0,0,0,0,0,0,2,0,2,2,2,0,0,0,0,0,
+	0,2,0,0,0,2,0,0,0,2,2,0,0,0,0,0,
+	0,0,0,0,0,2,2,2,0,2,0,0,0,0,0,0,
+	0,0,0,0,0,2,2,0,0,0,2,0,0,0,2,0,
+
+	0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,
+	0,2,0,0,0,2,2,0,0,0,2,0,0,0,0,0,
+	0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,
+        0,2,0,0,0,2,2,0,0,0,2,0,0,0,0,0,
+
+	0,2,0,0,0,2,2,0,0,2,0,0,0,0,0,0,
+	0,0,0,0,0,2,2,2,0,0,2,0,0,0,0,0,
+	0,0,2,0,0,2,2,0,0,0,2,0,0,0,0,0,
+	0,0,0,0,0,0,2,0,0,2,2,2,0,0,0,0,
+
+	0,0,0,0,2,2,0,0,0,2,2,0,0,0,0,0,
+	0,0,2,0,0,2,2,0,0,2,0,0,0,0,0,0,
+	0,0,0,0,2,2,0,0,0,2,2,0,0,0,0,0,
+        0,0,2,0,0,2,2,0,0,2,0,0,0,0,0,0};
+int nX, nY;
+int nBlockNo;
+time_t tStart, tEnd;
+int nFalling;
+int nBlockRot;
 
 void initSpace()
 {
@@ -24,17 +64,11 @@ void initSpace()
 	{
 		nSpace[23][j] = 1;
 	}
-
-	//**********test***********
-	//nSpace[2][5] = 2;
-	//nSpace[3][5] = 2;
-	//nSpace[4][5] = 2;
-	//nSpace[3][6] = 2;
-	//*************************	
 }
 
 void drawAll()
 {
+	system("clear");
 	for (int i = 3; i < 24; i++)
 	{
 		for (int j = 0; j < 12; j++)
@@ -48,22 +82,71 @@ void drawAll()
 		}
 		printf("\n");
 	}
+	printf("%d, %d \n", nX, nY);
 }
 
-int main()
+void addBlock()
 {
-	initSpace();
-
-	int y = 3;
-	while(1)
+	for (int i = 0; i < 4; i++)
 	{
-	system("clear");
-	nSpace[y][5] = 2;
-	drawAll();
-	sleep(1);
-	nSpace[y][5] = 0;
-	y++;
+		for (int j = 0; j < 4; j++)
+		{
+			nSpace[i + nX][j + nY] += nBlock[nBlockNo][nBlockRot][i][j];
+		}
 	}
-
-	return 0;
+	drawAll();
 }
+
+void delBlock()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			nSpace[i + nX][j + nY] -= nBlock[nBlockNo][nBlockRot][i][j];
+		}
+	}
+	drawAll();
+}
+
+void setNewBlock()
+{
+        nBlockNo = 1;
+        nBlockRot = 1;
+
+        int sum = 0;
+        for (int i = 3; i >= 0; i--)
+        {
+                for (int j = 0; j < 4; j++)
+                {
+                        sum += nBlock[nBlockNo][nBlockRot][i][j];
+                }
+                if (sum > 0)
+                {
+                        nX = 3 - i;
+			nY = 4;
+                	break;
+		}
+        }
+        nFalling = 1;
+        addBlock();
+	tStart = time(NULL);
+}
+
+void dropBlock()
+{
+	tEnd = time(NULL);
+	if (tEnd - tStart >= 1)
+	{
+		delBlock();
+		nX++;
+		addBlock();
+		tStart = time(NULL);
+	}
+}
+
+
+
+
+
+
