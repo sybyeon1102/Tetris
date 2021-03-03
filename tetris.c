@@ -94,7 +94,6 @@ void addBlock()
 			nSpace[i + nX][j + nY] += nBlock[nBlockNo][nBlockRot][i][j];
 		}
 	}
-	drawAll();
 }
 
 void delBlock()
@@ -106,12 +105,11 @@ void delBlock()
 			nSpace[i + nX][j + nY] -= nBlock[nBlockNo][nBlockRot][i][j];
 		}
 	}
-	drawAll();
 }
 
 void setNewBlock()
 {
-        nBlockNo = 1;
+        nBlockNo = 4;
         nBlockRot = 1;
 
         int sum = 0;
@@ -130,7 +128,22 @@ void setNewBlock()
         }
         nFalling = 1;
         addBlock();
+	drawAll();
 	tStart = time(NULL);
+}
+
+int isCrushing()
+{
+        for (int i = 0; i < 4; i++)
+        {
+                for (int j = 0; j < 4; j++)
+                {
+                       if (nSpace[i + nX][j + nY] > 2)
+			       return 1;
+                }
+        }
+
+	return 0;
 }
 
 void dropBlock()
@@ -141,6 +154,14 @@ void dropBlock()
 		delBlock();
 		nX++;
 		addBlock();
+		if(isCrushing())
+		{
+			delBlock();
+			nX--;
+			addBlock();
+			nFalling = 0;
+		}
+		drawAll();
 		tStart = time(NULL);
 	}
 }
