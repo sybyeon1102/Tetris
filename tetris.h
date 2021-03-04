@@ -14,5 +14,5 @@ extern void delBlock();
 extern void setNewBlock();
 extern int isCrushing();
 extern void dropBlock();
-
+extern void getInput();
 

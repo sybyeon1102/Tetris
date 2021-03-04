@@ -13,6 +13,7 @@ int main()
 		if (!nFalling)
 			setNewBlock();
 		dropBlock();
+		getInput();
 	}
 	return 0;
 }

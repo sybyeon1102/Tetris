@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include "event.h"
 
 int nSpace[24][12];
 int nBlock[7][4][4][4] = {0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,
@@ -54,7 +55,7 @@ void initSpace()
 		}
 	}
 	
-	for (int i = 3; i < 24; i++)
+	for (int i = 0; i < 24; i++)
 	{
 		nSpace[i][0] = 1;
 		nSpace[i][11] = 1;
@@ -166,7 +167,54 @@ void dropBlock()
 	}
 }
 
-
+void getInput()
+{
+	init_keyboard();
+	if (_kbhit())
+	{
+		int ch1 = _getch();
+		int ch2 = _getch();
+		int ch3 = _getch();
+		if (ch1 == 27 && ch2 == 91)
+		{
+			delBlock();
+			switch (ch3)
+			{
+				case 68:
+					nY--;
+					break;
+				case 67:
+					nY++;
+					break;
+				case 66:
+					nX++;
+					break;
+			}
+			addBlock();
+			if (isCrushing())
+			{
+				delBlock();
+				switch (ch3)
+				{
+					case 68:
+						nY++;
+						break;
+					case 67:
+						nY--;
+						break;
+					case 66:
+						nX--;
+						nFalling = 0;
+						break;
+				}
+				addBlock();
+			}
+			drawAll();
+			tStart = time(NULL);
+		}
+	}
+	close_keyboard();
+}
 
 
 
