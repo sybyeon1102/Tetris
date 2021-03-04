@@ -40,7 +40,7 @@ int nBlock[7][4][4][4] = {0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,
 	0,0,0,0,2,2,0,0,0,2,2,0,0,0,0,0,
         0,0,2,0,0,2,2,0,0,2,0,0,0,0,0,0};
 int nX, nY;
-int nBlockNo;
+int nBlockNo = -1;
 time_t tStart, tEnd;
 int nFalling;
 int nBlockRot;
@@ -155,8 +155,10 @@ void delFullLine()
 
 void setNewBlock()
 {
-        nBlockNo = 4;
-        nBlockRot = 1;
+        nBlockNo++;
+	if (nBlockNo > 6)
+		nBlockNo = 0;
+        nBlockRot = 0;
 
         int sum = 0;
         for (int i = 3; i >= 0; i--)
@@ -192,6 +194,113 @@ int isCrushing()
 	return 0;
 }
 
+void moveToLeft()
+{
+	delBlock();
+	nY--;
+	addBlock();
+	if (isCrushing())
+	{
+		delBlock();
+		nY++;
+		nBlockRot--;
+		if (nBlockRot < 0)
+			nBlockRot = 4;
+		addBlock();
+	}
+}
+
+void moveToRight()
+{
+        delBlock();
+        nY++;
+        addBlock();
+        if (isCrushing())
+        {
+                delBlock();
+                nY--;
+                nBlockRot--;
+                if (nBlockRot < 0)
+                        nBlockRot = 4;
+                addBlock();
+        }
+}
+
+void revertRot()
+{
+	delBlock();
+	nBlockRot--;
+	if (nBlockRot < 0)
+		nBlockRot = 4;
+	addBlock();
+}
+
+void avoidCrush()
+{
+	switch (nBlockNo)
+	{	
+		case 0:
+			if (nBlockRot == 0 || nBlockRot == 2)
+				revertRot();
+			else // 1, 3
+			{
+				delBlock();
+				nY++;
+				addBlock();
+				if (isCrushing())
+				{
+					delBlock();
+					nY -= 3;
+					addBlock();
+					if (isCrushing())
+					{
+						delBlock();
+						nY += 2;
+						nBlockRot--;
+						if (nBlockRot < 0)
+							nBlockRot = 4;
+						addBlock();
+					}
+				}
+			}
+			break;
+		case 2:
+			if (nBlockRot == 0)
+				moveToLeft();
+			else if (nBlockRot == 1)
+				revertRot();
+			else if (nBlockRot == 2)
+				moveToRight();
+			else 
+				;
+			break;
+		case 3:
+			if (nBlockRot == 0)
+				moveToRight();
+			else if (nBlockRot == 2)
+				moveToLeft();
+			else if (nBlockRot == 3)
+				revertRot();
+			else
+				;
+			break;
+		case 4:
+			if (nBlockRot == 0 || nBlockRot == 2)
+				moveToRight();
+			break;
+		case 5:
+			if (nBlockRot == 1 || nBlockRot == 3)
+				moveToLeft();
+			break;
+		case 6:
+		       	if (nBlockRot == 0 || nBlockRot == 2)
+                                moveToRight();
+                        break;
+	}
+
+}
+
+
 void dropBlock()
 {
 	tEnd = time(NULL);
@@ -218,10 +327,10 @@ void getInput()
 	if (_kbhit())
 	{
 		int ch1 = _getch();
-		int ch2 = _getch();
-		int ch3 = _getch();
-		if (ch1 == 27 && ch2 == 91)
+		if (ch1 == 27)
 		{
+			int ch2 = _getch();
+			int ch3 = _getch();
 			delBlock();
 			switch (ch3)
 			{
@@ -256,6 +365,19 @@ void getInput()
 			}
 			drawAll();
 			tStart = time(NULL);
+		}
+		else if (ch1 == 32)
+		{
+			delBlock();
+			nBlockRot++;
+			if (nBlockRot > 3)
+				nBlockRot = 0;
+			addBlock();
+			if (isCrushing())
+			{
+				avoidCrush();
+			}
+			drawAll();
 		}
 	}
 	close_keyboard();
