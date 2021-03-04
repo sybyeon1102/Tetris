@@ -11,7 +11,10 @@ int main()
 	while(1)
 	{
 		if (!nFalling)
+		{
 			setNewBlock();
+			delFullLine();
+		}
 		dropBlock();
 		getInput();
 	}

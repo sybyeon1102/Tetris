@@ -78,8 +78,12 @@ void drawAll()
 				printf("%s", "■ ");
 			else if (nSpace[i][j] == 1)
 				printf("%s", "□ ");
-			else
+			else if (nSpace[i][j] == 0)
 				printf("%s", "  ");
+			else
+			{
+				printf("%2d", nSpace[i][j]);
+			}
 		}
 		printf("\n");
 	}
@@ -106,6 +110,47 @@ void delBlock()
 			nSpace[i + nX][j + nY] -= nBlock[nBlockNo][nBlockRot][i][j];
 		}
 	}
+}
+
+int isLineFull() //return full line idx or 0
+{
+	int full = 1;
+	for (int i = 22; i > 4; i--)
+	{
+		for (int j = 1; j < 11; j++)
+		{
+			if (nSpace[i][j] == 0)
+				full = 0;
+		}
+		if (full)
+			return i;
+		full = 1;
+	}
+						
+}
+
+void delFullLine()
+{
+
+	delBlock();
+
+	int full = isLineFull();
+	while (full)
+	{
+		//delete full-th line
+		for (int i = full; i > 3; i--)
+		{
+			for (int j = 1; j < 11; j++)
+			{
+				nSpace[i][j] = nSpace[i-1][j];
+			}
+		}
+		full = isLineFull();
+	}
+
+
+	addBlock();
+	drawAll();
 }
 
 void setNewBlock()
@@ -215,7 +260,4 @@ void getInput()
 	}
 	close_keyboard();
 }
-
-
-
 

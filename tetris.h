@@ -11,8 +11,9 @@ extern void initSpace();
 extern void drawAll();
 extern void addBlock();
 extern void delBlock();
+extern int isLineFull();
+extern void delFullLine();
 extern void setNewBlock();
 extern int isCrushing();
 extern void dropBlock();
 extern void getInput();
-
