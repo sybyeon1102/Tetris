@@ -44,6 +44,7 @@ int nBlockNo = -1;
 time_t tStart, tEnd;
 int nFalling;
 int nBlockRot;
+int nGameOver = 0;
 
 void initSpace()
 {
@@ -152,13 +153,28 @@ void delFullLine()
 	addBlock();
 	drawAll();
 }
+int isCrushing()
+{
+        for (int i = 0; i < 4; i++)
+        {
+                for (int j = 0; j < 4; j++)
+                {
+                       if (nSpace[i + nX][j + nY] > 2)
+                               return 1;
+                }
+        }
+
+        return 0;
+}
+
 
 void setNewBlock()
 {
-        nBlockNo++;
-	if (nBlockNo > 6)
-		nBlockNo = 0;
-        nBlockRot = 0;
+	srand(time(NULL));
+	nBlockNo = rand() % 7;
+ 		
+       
+	nBlockRot = 0;
 
         int sum = 0;
         for (int i = 3; i >= 0; i--)
@@ -176,22 +192,13 @@ void setNewBlock()
         }
         nFalling = 1;
         addBlock();
+	if (isCrushing())
+	{
+		delBlock();
+		nGameOver = 1;
+	}
 	drawAll();
 	tStart = time(NULL);
-}
-
-int isCrushing()
-{
-        for (int i = 0; i < 4; i++)
-        {
-                for (int j = 0; j < 4; j++)
-                {
-                       if (nSpace[i + nX][j + nY] > 2)
-			       return 1;
-                }
-        }
-
-	return 0;
 }
 
 void moveToLeft()

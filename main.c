@@ -14,6 +14,8 @@ int main()
 		{
 			setNewBlock();
 			delFullLine();
+			if (nGameOver == 1)
+				break;
 		}
 		dropBlock();
 		getInput();
