@@ -44,7 +44,7 @@ int nBlockNo = -1;
 time_t tStart, tEnd;
 int nFalling;
 int nBlockRot;
-int nGameOver = 0;
+int nGameOver;
 
 void initSpace()
 {
@@ -127,19 +127,17 @@ int isLineFull() //return full line idx or 0
 			return i;
 		full = 1;
 	}
-						
+	return 0;			
 }
 
 void delFullLine()
 {
-
 	delBlock();
-
 	int full = isLineFull();
 	while (full)
 	{
 		//delete full-th line
-		for (int i = full; i > 3; i--)
+		for (int i = full; i > 2; i--)
 		{
 			for (int j = 1; j < 11; j++)
 			{
@@ -148,11 +146,10 @@ void delFullLine()
 		}
 		full = isLineFull();
 	}
-
-
 	addBlock();
 	drawAll();
 }
+
 int isCrushing()
 {
         for (int i = 0; i < 4; i++)
@@ -383,6 +380,10 @@ void getInput()
 			if (isCrushing())
 			{
 				avoidCrush();
+				if (isCrushing())
+				{
+					revertRot();
+				}
 			}
 			drawAll();
 		}

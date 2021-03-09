@@ -7,16 +7,17 @@ int main()
 {
         initSpace();
 	nFalling = 0;
+	nGameOver = 0;
 
 	while(1)
-	{
+	{	
 		if (!nFalling)
 		{
-			setNewBlock();
 			delFullLine();
-			if (nGameOver == 1)
-				break;
+			setNewBlock();
 		}
+		if (nGameOver)
+			break;
 		dropBlock();
 		getInput();
 	}
