@@ -13,8 +13,8 @@ int main()
 	{	
 		if (!nFalling)
 		{
-			delFullLine();
 			setNewBlock();
+			delFullLine();
 		}
 		if (nGameOver)
 			break;
